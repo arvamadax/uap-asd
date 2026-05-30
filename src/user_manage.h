@@ -159,9 +159,6 @@ void hapusUser(LinkedList& list, char* userID) {
     cout << "[!] User dengan ID \"" << userID << "\" tidak ditemukan.\n";
 }
 
-// ============================================================
-//  Helper Sorting: Insertion Sort ascending by monitoringScore
-// ============================================================
 void insertionSortByScore(UserNode** arr, int n) {
     for (int i = 1; i < n; i++) {
         UserNode* kunci = arr[i];
@@ -247,7 +244,6 @@ void tampilkanSemuaUser(LinkedList& list) {
     }
     cout << "----------------------------------------------\n";
 
-    // Bebaskan array pointer saja, bukan node-nya
     delete[] arr;
 }
 
