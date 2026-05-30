@@ -30,20 +30,44 @@ struct LinkedList {
 
 // Mengubah semua karakter char array menjadi huruf kapital
 void toUpperCase(char* str) {
-    // TODO: implementasi
+    int i = 0;
+    while (str[i] != '\0') {
+        if (str[i] >= 'a' && str[i] <= 'z') {
+            str[i] = str[i] - 32;
+        }
+        i++;
+    }
 }
 
 // Memeriksa apakah 3 karakter pertama userID sesuai kode wilayah yang valid
 // Return true jika valid, false jika tidak
 bool isValidPrefix(char* userID) {
-    // TODO: implementasi
+    if (userID[0] == '\0' || userID[1] == '\0' || userID[2] == '\0') {
+        return false;
+    }
+    for (int i = 0; i < JUMLAH_WILAYAH; i++) {
+        if (userID[0] == KODE_WILAYAH[i][0] &&
+            userID[1] == KODE_WILAYAH[i][1] &&
+            userID[2] == KODE_WILAYAH[i][2]) {
+            return true;
+        }
+    }
     return false;
 }
 
 // Mengembalikan nomor wilayah (1-4) berdasarkan prefix userID
 // Return 0 jika tidak ditemukan
 int getWilayah(char* userID) {
-    // TODO: implementasi
+    if (userID[0] == '\0' || userID[1] == '\0' || userID[2] == '\0') {
+        return 0;
+    }
+    for (int i = 0; i < JUMLAH_WILAYAH; i++) {
+        if (userID[0] == KODE_WILAYAH[i][0] &&
+            userID[1] == KODE_WILAYAH[i][1] &&
+            userID[2] == KODE_WILAYAH[i][2]) {
+            return i + 1;
+        }
+    }
     return 0;
 }
 
@@ -51,14 +75,28 @@ int getWilayah(char* userID) {
 // Ideal: temperature 20-27, humidity 40-60, airQuality 0-50, smoke==0, noise 30-55
 // Rumus: (jumlahIdeal / 5.0f) * 100.0f
 float hitungMonitoringScore(SensorData s) {
-    // TODO: implementasi
-    return 0.0f;
+    int jumlahIdeal = 0;
+    if (s.temperature >= 20.0f && s.temperature <= 27.0f) {
+        jumlahIdeal++;
+    }
+    if (s.humidity >= 40.0f && s.humidity <= 60.0f) {
+        jumlahIdeal++;
+    }
+    if (s.airQuality >= 0 && s.airQuality <= 50) {
+        jumlahIdeal++;
+    }
+    if (s.smoke == 0) {
+        jumlahIdeal++;
+    }
+    if (s.noise >= 30.0f && s.noise <= 55.0f) {
+        jumlahIdeal++;
+    }
+    return (jumlahIdeal / 5.0f) * 100.0f;
 }
 
 // Return true jika semua sensor bernilai ideal (score == 100%)
 bool isIdealSensor(SensorData s) {
-    // TODO: implementasi
-    return false;
+    return hitungMonitoringScore(s) == 100.0f;
 }
 
 #endif

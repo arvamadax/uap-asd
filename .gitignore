@@ -1,0 +1,13 @@
+SUPERPROMPT.md
+
+*.exe
+*.out
+*.o
+*.obj
+
+.vscode/
+.idea/
+*.code-workspace
+
+Thumbs.db
+.DS_Store
