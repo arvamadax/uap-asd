@@ -2,32 +2,39 @@
 #define USER_ADD_H
 
 #include "structures.h"
-#include <cstring>
-#include <cstdlib>
-#include <ctime>
-#include <cstdio>
+
+// Membandingkan dua string tanpa menggunakan <cstring>
+bool isSameString(char* a, char* b) {
+    int i = 0;
+
+    while (a[i] != '\0' && b[i] != '\0') {
+        if (a[i] != b[i]) {
+            return false;
+        }
+        i++;
+    }
+
+    return a[i] == '\0' && b[i] == '\0';
+}
 
 // Memeriksa apakah userID sudah ada di linked list
 // Return true jika duplikat ditemukan
-
-    bool isUserIDExist(LinkedList& list, char* userID) {
+bool isUserIDExist(LinkedList& list, char* userID) {
     UserNode* current = list.head;
 
     while (current != nullptr) {
-        if (strcmp(current->userID, userID) == 0) {
+        if (isSameString(current->userID, userID)) {
             return true;
         }
         current = current->next;
     }
 
     return false;
- }
-
+}
 
 // Memeriksa apakah semua nilai sensor berada dalam range yang diperbolehkan
 // Range: temperature -10~50, humidity 0~100, airQuality 0~500, noise 0~120
 // Return true jika semua valid
-
 bool validasiSensor(SensorData s) {
     return (s.temperature >= -10 && s.temperature <= 50) &&
            (s.humidity >= 0 && s.humidity <= 100) &&
@@ -35,11 +42,9 @@ bool validasiSensor(SensorData s) {
            (s.noise >= 0 && s.noise <= 120);
 }
 
-
 // Meminta input semua data sensor dari user dengan validasi range
 // Melakukan loop ulang jika nilai diluar range
 // Return SensorData yang sudah valid
-
 SensorData inputSensor() {
     SensorData s;
 
@@ -74,7 +79,6 @@ SensorData inputSensor() {
 // Menambahkan data pelanggan baru ke linked list
 // Alur: input userID -> validasi prefix & duplikat -> input nama -> inputSensor()
 // -> buat node baru -> insert ke tail linked list -> tampilkan hasil
-
 void tambahUser(LinkedList& list) {
     UserNode* newNode = new UserNode;
 
@@ -100,6 +104,7 @@ void tambahUser(LinkedList& list) {
     cin.getline(newNode->nama, 100);
 
     newNode->sensor = inputSensor();
+
     newNode->monitoringScore =
         hitungMonitoringScore(newNode->sensor);
 
@@ -120,58 +125,6 @@ void tambahUser(LinkedList& list) {
     list.count++;
 
     cout << "User berhasil ditambahkan!\n";
-}
-
-// Generate sejumlah data acak menggunakan rand() untuk keperluan pengujian
-
-void generateRandom(LinkedList& list, int jumlah) {
-
-    for (int i = 0; i < jumlah; i++) {
-
-        UserNode* newNode = new UserNode;
-
-        int wilayah = rand() % 4;
-
-        strcpy(newNode->userID, KODE_WILAYAH[wilayah]);
-
-        int angka = rand() % 9000 + 1000;
-
-        char temp[10];
-        sprintf(temp, "%d", angka);
-
-        strcat(newNode->userID, temp);
-
-        strcpy(newNode->nama, "RandomUser");
-
-        newNode->sensor.temperature = (rand() % 61) - 10;
-        newNode->sensor.humidity = rand() % 101;
-        newNode->sensor.airQuality = rand() % 501;
-        newNode->sensor.smoke = rand() % 2;
-        newNode->sensor.noise = rand() % 121;
-
-        newNode->monitoringScore =
-            hitungMonitoringScore(newNode->sensor);
-
-        newNode->next = nullptr;
-
-        if (list.head == nullptr) {
-            list.head = newNode;
-        } else {
-
-            UserNode* current = list.head;
-
-            while (current->next != nullptr) {
-                current = current->next;
-            }
-
-            current->next = newNode;
-        }
-
-        list.count++;
-    }
-
-    cout << jumlah
-         << " data random berhasil dibuat.\n";
 }
 
 #endif
