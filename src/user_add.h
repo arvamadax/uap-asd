@@ -3,27 +3,13 @@
 
 #include "structures.h"
 
-// Membandingkan dua string tanpa menggunakan <cstring>
-bool isSameString(char* a, char* b) {
-    int i = 0;
-
-    while (a[i] != '\0' && b[i] != '\0') {
-        if (a[i] != b[i]) {
-            return false;
-        }
-        i++;
-    }
-
-    return a[i] == '\0' && b[i] == '\0';
-}
-
 // Memeriksa apakah userID sudah ada di linked list
 // Return true jika duplikat ditemukan
 bool isUserIDExist(LinkedList& list, char* userID) {
     UserNode* current = list.head;
 
     while (current != nullptr) {
-        if (isSameString(current->userID, userID)) {
+        if (strSama(current->userID, userID)) {
             return true;
         }
         current = current->next;

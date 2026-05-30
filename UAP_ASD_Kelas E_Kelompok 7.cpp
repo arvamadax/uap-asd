@@ -64,6 +64,18 @@ void toUpperCase(char* str) {
     }
 }
 
+// Membandingkan dua C-string tanpa menggunakan <cstring>
+bool strSama(const char* a, const char* b) {
+    int i = 0;
+    while (a[i] != '\0' && b[i] != '\0') {
+        if (a[i] != b[i]) {
+            return false;
+        }
+        i++;
+    }
+    return (a[i] == '\0' && b[i] == '\0');
+}
+
 // Memeriksa apakah 3 karakter pertama userID sesuai kode wilayah yang valid
 bool isValidPrefix(char* userID) {
     if (userID[0] == '\0' || userID[1] == '\0' || userID[2] == '\0') {
@@ -124,26 +136,12 @@ bool isIdealSensor(SensorData s) {
 //   MODUL 2 - TAMBAH USER  (Harry Widjaya)
 // =====================================================================
 
-// Membandingkan dua string tanpa menggunakan <cstring>
-bool isSameString(char* a, char* b) {
-    int i = 0;
-
-    while (a[i] != '\0' && b[i] != '\0') {
-        if (a[i] != b[i]) {
-            return false;
-        }
-        i++;
-    }
-
-    return a[i] == '\0' && b[i] == '\0';
-}
-
 // Memeriksa apakah userID sudah ada di linked list
 bool isUserIDExist(LinkedList& list, char* userID) {
     UserNode* current = list.head;
 
     while (current != nullptr) {
-        if (isSameString(current->userID, userID)) {
+        if (strSama(current->userID, userID)) {
             return true;
         }
         current = current->next;
@@ -242,20 +240,10 @@ void tambahUser(LinkedList& list) {
 }
 
 // =====================================================================
-//   MODUL 3 - CARI, UPDATE, HAPUS USER  (Muh. Khaliq Fattah Qaid)
+//   MODUL 3 - CARI, UPDATE, HAPUS, LIST USER  (Muh. Khaliq Fattah Qaid)
 // =====================================================================
 
-// Membandingkan dua string (versi const-correct)
-bool strSama(const char* a, const char* b) {
-    int i = 0;
-    while (a[i] != '\0' && b[i] != '\0') {
-        if (a[i] != b[i]) return false;
-        i++;
-    }
-    return (a[i] == '\0' && b[i] == '\0');
-}
-
-// Menyalin string sumber ke tujuan
+// Menyalin string sumber ke tujuan tanpa <cstring>
 void salinStr(char* tujuan, const char* sumber) {
     int i = 0;
     while (sumber[i] != '\0') {
@@ -265,7 +253,7 @@ void salinStr(char* tujuan, const char* sumber) {
     tujuan[i] = '\0';
 }
 
-// Menghitung panjang string
+// Menghitung panjang C-string
 int panjangStr(const char* s) {
     int i = 0;
     while (s[i] != '\0') i++;
@@ -400,91 +388,38 @@ void hapusUser(LinkedList& list, char* userID) {
     cout << "[!] User dengan ID \"" << userID << "\" tidak ditemukan.\n";
 }
 
-// Insertion sort ascending berdasarkan monitoringScore
-void insertionSortByScore(UserNode** arr, int n) {
-    for (int i = 1; i < n; i++) {
-        UserNode* kunci = arr[i];
-        int j = i - 1;
-        while (j >= 0 && arr[j]->monitoringScore > kunci->monitoringScore) {
-            arr[j + 1] = arr[j];
-            j--;
-        }
-        arr[j + 1] = kunci;
-    }
-}
-
-// Menampilkan ringkasan semua pelanggan beserta statistik
+// Menampilkan ringkasan semua pelanggan dalam format tabel sederhana
+// (laporan lengkap dengan statistik & sort ada di showLaporan)
 void tampilkanSemuaUser(LinkedList& list) {
     if (list.head == nullptr || list.count == 0) {
         cout << "[!] Belum ada data pelanggan dalam sistem.\n";
         return;
     }
 
-    int n = list.count;
+    cout << "\n=================================================================\n";
+    cout << "  RINGKASAN PELANGGAN (Total: " << list.count << ")\n";
+    cout << "=================================================================\n";
+    cout << "  No   User ID    Wilayah   Score     Nama Pelanggan\n";
+    cout << "-----------------------------------------------------------------\n";
 
-    UserNode** arr = new UserNode*[n];
-    UserNode* cur  = list.head;
-    for (int i = 0; i < n; i++) {
-        arr[i] = cur;
-        cur    = cur->next;
+    UserNode* current = list.head;
+    int no = 1;
+    while (current != nullptr) {
+        cout << "  " << no
+             << "    " << current->userID
+             << "      " << getWilayah(current->userID)
+             << "        " << current->monitoringScore << "%"
+             << "     " << current->nama << "\n";
+        current = current->next;
+        no++;
     }
 
-    int   jumlahIdeal = 0;
-    float totalScore  = 0.0f;
-    int   rekap[5]    = {0, 0, 0, 0, 0};
-
-    for (int i = 0; i < n; i++) {
-        SensorData s = arr[i]->sensor;
-        totalScore  += arr[i]->monitoringScore;
-
-        if (isIdealSensor(s)) jumlahIdeal++;
-
-        if (s.temperature >= 20.0f && s.temperature <= 27.0f) rekap[0]++;
-        if (s.humidity    >= 40.0f && s.humidity    <= 60.0f) rekap[1]++;
-        if (s.airQuality  >= 0     && s.airQuality  <= 50   ) rekap[2]++;
-        if (s.smoke == 0)                                      rekap[3]++;
-        if (s.noise >= 30.0f       && s.noise       <= 55.0f) rekap[4]++;
-    }
-
-    float rataRata = totalScore / n;
-
-    insertionSortByScore(arr, n);
-
-    cout << "\n============================================\n";
-    cout << "         LAPORAN MONITORING IOT\n";
-    cout << "============================================\n";
-
-    cout << "\n[Statistik Monitoring]\n";
-    cout << "  Jumlah User Score 100% (Ideal)   : " << jumlahIdeal       << "\n";
-    cout << "  Jumlah User Score < 100%         : " << (n - jumlahIdeal) << "\n";
-    cout << "  Total Pelanggan                  : " << n                  << "\n";
-    cout << "  Rata-rata Score                  : " << rataRata           << "%\n";
-
-    cout << "\n[Rekap Sensor (jumlah rumah dengan nilai ideal)]\n";
-    cout << "  Temperature  : " << rekap[0] << " rumah\n";
-    cout << "  Humidity     : " << rekap[1] << " rumah\n";
-    cout << "  Air Quality  : " << rekap[2] << " rumah\n";
-    cout << "  Smoke        : " << rekap[3] << " rumah\n";
-    cout << "  Noise        : " << rekap[4] << " rumah\n";
-
-    cout << "\n[Peringkat Rumah (Score Terendah -> Tertinggi)]\n";
-    for (int i = 0; i < n; i++) {
-        cout << "----------------------------------------------\n";
-        cout << "Peringkat " << (i + 1) << "\n";
-        cout << "  User ID          : " << arr[i]->userID                  << "\n";
-        cout << "  Nama Pelanggan   : " << arr[i]->nama                    << "\n";
-        cout << "  Monitoring Score : " << arr[i]->monitoringScore         << "%\n";
-        cout << "  Wilayah          : " << getWilayah(arr[i]->userID)      << "\n";
-        cout << "  Data Sensor:\n";
-        tampilkanSensor(arr[i]->sensor);
-    }
-    cout << "----------------------------------------------\n";
-
-    delete[] arr;
+    cout << "=================================================================\n";
+    cout << "Gunakan perintah 'show' untuk laporan lengkap (statistik + sort).\n";
 }
 
 // =====================================================================
-//   MODUL 4 - LAPORAN & SORT  (Daniel Jalayar Ananda)
+//   MODUL 4 - LAPORAN & MERGE SORT  (Daniel Jalayar Ananda)
 // =====================================================================
 
 // Menyalin linked list ke array pointer
@@ -549,7 +484,7 @@ void merge(UserNode** arr, int kiri, int tengah, int kanan) {
     delete[] R;
 }
 
-// Fungsi rekursif merge sort
+// Fungsi rekursif merge sort O(n log n)
 void mergeSort(UserNode** arr, int kiri, int kanan) {
     if (kiri < kanan) {
         int tengah = kiri + (kanan - kiri) / 2;
@@ -600,7 +535,7 @@ void hitungRekap(LinkedList& list,
     }
 }
 
-// Menampilkan laporan lengkap dengan mergeSort
+// Menampilkan laporan lengkap dengan merge sort
 void showLaporan(LinkedList& list) {
 
     if (list.head == nullptr) {
@@ -748,7 +683,7 @@ void tampilkanMenu() {
     cout << "  cari    -> Cari pelanggan berdasarkan User ID\n";
     cout << "  update  -> Perbarui data pelanggan\n";
     cout << "  hapus   -> Hapus data pelanggan\n";
-    cout << "  list    -> Tampilkan ringkasan semua pelanggan\n";
+    cout << "  list    -> Tampilkan ringkasan tabel semua pelanggan\n";
     cout << "  show    -> Tampilkan laporan lengkap (Merge Sort)\n";
     cout << "  exit    -> Keluar dari program\n";
     cout << "-----------------------------------------------------------\n";

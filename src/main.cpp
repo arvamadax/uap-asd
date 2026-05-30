@@ -3,28 +3,94 @@
 #include "user_report.h"
 using namespace std;
 
+// Membersihkan seluruh node linked list dari memori
+void cleanupList(LinkedList& list) {
+    UserNode* current = list.head;
+    while (current != nullptr) {
+        UserNode* next = current->next;
+        delete current;
+        current = next;
+    }
+    list.head = nullptr;
+    list.count = 0;
+}
+
+// Menampilkan banner header program saat startup
+void tampilkanHeader() {
+    cout << "===========================================================\n";
+    cout << "        IoT HOME MONITORING SYSTEM\n";
+    cout << "   UAP Algoritma dan Struktur Data | Kelas E - Kelompok 7\n";
+    cout << "   Teknik Komputer FILKOM Universitas Brawijaya 2025/2026\n";
+    cout << "===========================================================\n\n";
+}
+
+// Menampilkan menu perintah yang tersedia
+void tampilkanMenu() {
+    cout << "\n-----------------------------------------------------------\n";
+    cout << "  MENU PERINTAH\n";
+    cout << "-----------------------------------------------------------\n";
+    cout << "  tambah  -> Tambah data pelanggan baru\n";
+    cout << "  cari    -> Cari pelanggan berdasarkan User ID\n";
+    cout << "  update  -> Perbarui data pelanggan\n";
+    cout << "  hapus   -> Hapus data pelanggan\n";
+    cout << "  list    -> Tampilkan ringkasan tabel semua pelanggan\n";
+    cout << "  show    -> Tampilkan laporan lengkap (Merge Sort)\n";
+    cout << "  exit    -> Keluar dari program\n";
+    cout << "-----------------------------------------------------------\n";
+    cout << "Masukkan perintah: ";
+}
+
 int main() {
-    // TODO: inisialisasi LinkedList
-    // list.head = nullptr; list.count = 0;
+    LinkedList list;
+    list.head = nullptr;
+    list.count = 0;
 
-    // TODO: tampilkan header program sekali saat startup
+    tampilkanHeader();
 
-    // TODO: loop menu utama dengan while(true)
-    // Di dalam loop:
-    //   - tampilkan menu
-    //   - baca input perintah menggunakan char array + cin
-    //   - dispatch ke fungsi yang sesuai:
-    //       "tambah"      -> tambahUser(list)
-    //       "cari"        -> baca ID lalu cariUser(list, id)
-    //       "update"      -> baca ID lalu updateUser(list, id)
-    //       "hapus"       -> baca ID lalu hapusUser(list, id)
-    //       "show"        -> showLaporan(list)
-    //       "list"        -> tampilkanSemuaUser(list)
-    //       "random"      -> baca N lalu generateRandom(list, N)
-    //       "exit"        -> tampilkan pesan keluar, bebaskan memori, return 0
-    //       default       -> tampilkan pesan perintah tidak dikenal
+    char perintah[20];
+    char userID[20];
 
-    // TODO: cleanup memori linked list sebelum return 0
+    while (true) {
+        tampilkanMenu();
+        cin >> perintah;
+        toUpperCase(perintah);
 
+        if (strSama(perintah, "TAMBAH")) {
+            tambahUser(list);
+        }
+        else if (strSama(perintah, "CARI")) {
+            cout << "Masukkan User ID yang dicari: ";
+            cin >> userID;
+            cariUser(list, userID);
+        }
+        else if (strSama(perintah, "UPDATE")) {
+            cout << "Masukkan User ID yang akan diupdate: ";
+            cin >> userID;
+            updateUser(list, userID);
+        }
+        else if (strSama(perintah, "HAPUS")) {
+            cout << "Masukkan User ID yang akan dihapus: ";
+            cin >> userID;
+            hapusUser(list, userID);
+        }
+        else if (strSama(perintah, "LIST")) {
+            tampilkanSemuaUser(list);
+        }
+        else if (strSama(perintah, "SHOW")) {
+            showLaporan(list);
+        }
+        else if (strSama(perintah, "EXIT")) {
+            cout << "\nTerima kasih telah menggunakan IoT Home Monitoring System.\n";
+            cout << "Membersihkan memori...\n";
+            cleanupList(list);
+            cout << "Program selesai.\n";
+            return 0;
+        }
+        else {
+            cout << "[!] Perintah \"" << perintah << "\" tidak dikenal. Coba lagi.\n";
+        }
+    }
+
+    cleanupList(list);
     return 0;
 }

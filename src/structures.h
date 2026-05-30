@@ -39,6 +39,19 @@ void toUpperCase(char* str) {
     }
 }
 
+// Membandingkan dua C-string tanpa menggunakan <cstring>
+// Return true jika kedua string identik (termasuk panjang sama)
+bool strSama(const char* a, const char* b) {
+    int i = 0;
+    while (a[i] != '\0' && b[i] != '\0') {
+        if (a[i] != b[i]) {
+            return false;
+        }
+        i++;
+    }
+    return (a[i] == '\0' && b[i] == '\0');
+}
+
 // Memeriksa apakah 3 karakter pertama userID sesuai kode wilayah yang valid
 // Return true jika valid, false jika tidak
 bool isValidPrefix(char* userID) {
